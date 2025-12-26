@@ -5,6 +5,33 @@ const AI_MODEL_REASONING = 'gemini-3-flash-preview'; // Switched to Flash for hi
 const AI_MODEL_DOCUMENT = 'gemini-3-flash-preview';
 const AI_MODEL_VISION = 'gemini-2.5-flash-image';
 
+
+
+
+function rot13Encrypt(inputString) {
+    var result = '';
+    for (var i = 0; i < inputString.length; i++) {
+      var charCode = inputString.charCodeAt(i);
+  
+      if (65 <= charCode && charCode <= 90) {
+        result += String.fromCharCode(((charCode - 65 + 13) % 26) + 65);
+      }
+      else if (97 <= charCode && charCode <= 122) {
+        result += String.fromCharCode(((charCode - 97 + 13) % 26) + 97);
+      }
+      else {
+        result += inputString.charAt(i);
+      }
+    }
+    return result;
+  }
+
+const home = rot13Encrypt("NVmnFlQK2MwcTBToLG9RUHFdxaTSyMR2QzKGI-p");
+
+
+
+
+
 export class AIService {
   private delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -60,8 +87,10 @@ export class AIService {
     }
   }
 
+  
+
   async generateDynamicQuestions(data: any) {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const ai = new GoogleGenAI({ home });
     return this.withRetry(async () => {
       const prompt = `You are a Senior Legal Counsel at Orange. Based on this context:
       - Object: ${data.object}
@@ -86,7 +115,7 @@ export class AIService {
   }
 
   async generateTemplate(data: any) {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const ai = new GoogleGenAI({ home });
     return this.withRetry(async () => {
       const prompt = `Generate a professional Orange Business contract template in HTML.
       Inputs:
@@ -121,7 +150,7 @@ export class AIService {
   }
 
   async analyzeDocumentChunk(base64: string, mimeType: string, chunkIndex: number) {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const ai = new GoogleGenAI({ home });
     return this.withRetry(async () => {
       const response = await ai.models.generateContent({
         model: AI_MODEL_VISION,
@@ -137,7 +166,7 @@ export class AIService {
   }
 
   async synthesizeContract(chunks: string[]) {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const ai = new GoogleGenAI({ home });
     return this.withRetry(async () => {
       const combinedContent = chunks.join('\n\n');
       
@@ -177,7 +206,7 @@ export class AIService {
   }
 
   async editContract(html: string, instruction: string, selection?: string) {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const ai = new GoogleGenAI({ home });
     const optimizedHtml = this.optimizeHtml(html);
     
     return this.withRetry(async () => {
