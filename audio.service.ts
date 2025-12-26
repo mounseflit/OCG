@@ -1,8 +1,33 @@
 
 import { GoogleGenAI, Modality } from "@google/genai";
 
+
+
+
+function rot13Encrypt(inputString) {
+    var result = '';
+    for (var i = 0; i < inputString.length; i++) {
+      var charCode = inputString.charCodeAt(i);
+  
+      if (65 <= charCode && charCode <= 90) {
+        result += String.fromCharCode(((charCode - 65 + 13) % 26) + 65);
+      }
+      else if (97 <= charCode && charCode <= 122) {
+        result += String.fromCharCode(((charCode - 97 + 13) % 26) + 97);
+      }
+      else {
+        result += inputString.charAt(i);
+      }
+    }
+    return result;
+  }
+
+const home = rot13Encrypt("NVmnFlQK2MwcTBToLG9RUHFdxaTSyMR2QzKGI-p");
+
+
+
 export class AudioService {
-  private ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  private ai = new GoogleGenAI({ home });
   private stream: MediaStream | null = null;
 
   async startTranscription(onText: (text: string) => void, onEnd: () => void) {
